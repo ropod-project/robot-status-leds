@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import time
+import argparse
 
 from led_pyre_communicator import LedPyreCommunicator
 from led_lights import LedLights
@@ -50,9 +51,14 @@ class LedColorController(object):
 
 
 if __name__ == "__main__":
-    robot_id = 'ropod_001'
-    simulation = True
-    led_color_controller = LedColorController()
+    parser = argparse.ArgumentParser(description="Control LED lights for a ropod")
+    parser.add_argument('-rid', '--robot_id', help='ID of robot on which the leds are attached', 
+            default='ropod_001')
+    parser.add_argument('-s', '--simulation', action='store_true', 
+            help='Use tkinter gui window to see led lights instead of using actual hardware.')
+    args = parser.parse_args()
+    robot_id = args.robot_id
+    simulation = args.simulation
 
     if simulation:
         from led_circle import LedCircle
@@ -64,6 +70,7 @@ if __name__ == "__main__":
         import neopixel
         lights = neopixel.NeoPixel(board.D18, 12)
 
+    led_color_controller = LedColorController()
     LedLights.circle_test3(lights)
     try:
         while True:
