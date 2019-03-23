@@ -1,7 +1,12 @@
-from Tkinter import *
+import sys
 import math
 import threading
 import time
+# detect version of python and import tkinter accordingly
+if sys.version_info[0] == 2 :
+    from Tkinter import * # for python2
+elif sys.version_info[0] == 3 :
+    from tkinter import * # for python3 (sudo apt install python3-tk)
 
 class LedCircle(object):
 
