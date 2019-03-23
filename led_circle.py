@@ -83,8 +83,8 @@ class LedCircle(object):
         self._leds = []
         radius = ((self.win_size*7)/8 - self.win_size/8)/2
         for i in range(self.N):
-            x = radius * math.cos(i * ((math.pi) * 2) / self.N)
-            y = radius * math.sin(i * ((math.pi) * 2) / self.N)
+            y = -radius * math.cos(i * ((math.pi) * 2) / self.N)
+            x = radius * math.sin(i * ((math.pi) * 2) / self.N)
             x += self.win_size/2
             y += self.win_size/2
             self._leds.append(self._canvas.create_oval(x-self.led_size, y-self.led_size, 
