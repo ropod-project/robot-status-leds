@@ -1,13 +1,12 @@
 import time
 import math
-from led_circle import LedCircle
 
 class LedLights(object):
 
     """A class providing static methods to control a led_circle's led lights"""
 
     @staticmethod
-    def show_percentage(lights, percentage):
+    def show_percentage(lights, percentage=77.0):
         """show percentage on led lights
 
         :lights: list of tuples (each tuple is (r,g,b))
@@ -43,7 +42,75 @@ class LedLights(object):
             time.sleep(0.5)
 
     @staticmethod
-    def set_status_1_and_remaining(lights, color1=(255, 0, 0), color2=(255, 255, 255)):
+    def circle_test2(lights, colors=[(255,0,0), (0, 255, 0), (0, 0, 255)]):
+        """test the led lights by making a circle
+
+        :lights: list of tuples (each tuple is (r,g,b))
+        :color: list of tuple (r,g,b)
+        :returns: None
+
+        """
+        black = (0, 0, 0)
+        N = len(lights)
+        for i in range(N):
+            lights[i] = black
+        for color in colors:
+            for i in range(N):
+                lights[i] = color
+                time.sleep(0.05)
+            for i in range(N):
+                lights[i] = black
+                time.sleep(0.05)
+
+    @staticmethod
+    def circle_test3(lights, colors=[(255,0,0), (0, 255, 0), (0, 0, 255)]):
+        """test the led lights by making a circle
+
+        :lights: list of tuples (each tuple is (r,g,b))
+        :color: list of tuple (r,g,b)
+        :returns: None
+
+        """
+        black = (0, 0, 0)
+        N = len(lights)
+        for i in range(N):
+            lights[i] = black
+        for color in colors:
+            for i in range(N):
+                lights[i] = color
+                time.sleep(0.1)
+
+    @staticmethod
+    def circle_test4(lights, colors=[(255,0,0), (0, 255, 0), (0, 0, 255)]):
+        """test the led lights by making a circle
+
+        :lights: list of tuples (each tuple is (r,g,b))
+        :color: list of tuple (r,g,b)
+        :returns: None
+
+        """
+        black = (0, 0, 0)
+        led_colors = []
+        N = len(lights)
+        if N % len(colors) != 0 :
+            for i in range(N/len(colors)):
+                led_colors.extend(colors)
+            for i in range(N % len(colors)):
+                led_colors.append(black)
+        else :
+            for i in range(N/len(colors) - 1):
+                led_colors.extend(colors)
+            for i in range(len(colors)):
+                led_colors.append(black)
+
+        for i in range(N):
+            for j in range(N):
+                lights[j] = led_colors[j]
+            led_colors.insert(0, led_colors.pop(-1))
+            time.sleep(0.3)
+
+    @staticmethod
+    def set_status(lights, color1=(255, 0, 0), color2=(255, 255, 255)):
         """ Set color1 to led1 and color2 to remaining leds
 
         :lights: list of tuples (each tuple is (r,g,b))
@@ -57,11 +124,34 @@ class LedLights(object):
         for i in range(1, N) :
             lights[i] = color2
 
+    @staticmethod
+    def set_status_half_and_half(lights, color1=(255, 0, 0), color2=(255, 255, 255)):
+        """ Set color1 to led1 and color2 to remaining leds
+
+        :lights: list of tuples (each tuple is (r,g,b))
+        :color1: tuple (r,g,b)
+        :color2: tuple (r,g,b)
+        :returns: None
+
+        """
+        N = len(lights)
+        for i in range(N/2) :
+            lights[i] = color1
+        for i in range(N/2, N) :
+            lights[i] = color2
+
 if __name__ == "__main__":
+    from led_circle import LedCircle
     led_circle = LedCircle()
     led_circle.start()
-    # LedLights.show_percentage(led_circle.led_colors, 55.0)
-    # LedLights.circle_test(led_circle.led_colors, (0, 255, 0))
-    LedLights.set_status_1_and_remaining(led_circle.led_colors, color1=(0, 255, 0))
+    LedLights.show_percentage(led_circle.led_colors, 55.0)
     time.sleep(1)
+    LedLights.circle_test(led_circle.led_colors)
+    LedLights.circle_test2(led_circle.led_colors)
+    LedLights.circle_test3(led_circle.led_colors)
+    LedLights.circle_test4(led_circle.led_colors)
+    LedLights.circle_test4(led_circle.led_colors, colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 255, 255)])
+    LedLights.set_status(led_circle.led_colors, color1=(0, 255, 0))
+    time.sleep(1)
+    LedLights.set_status_half_and_half(led_circle.led_colors, color1=(0, 255, 0))
     led_circle.stop()
