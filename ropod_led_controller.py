@@ -18,12 +18,18 @@ class LedColorController(object):
         "BRINGUP_NOT_RUNNING":(255, 255, 255),
         "COMPONENTS_WORKING":(0, 255, 0),
         "COMPONENTS_NOT_WORKING":(255, 0, 0),
+        "E_STOP_PRESSED":(255, 0, 0),
+        "LOW_BATTERY":(255, 0, 0),
+        "MEDIUM_BATTERY":(255, 255, 0),
+        "HIGH_BATTERY":(0, 255, 0),
         "BLACK":(0, 0, 0)
     }
     def __init__(self):
         self._led_pyre_comm = LedPyreCommunicator(robot_id)
+        self.variables = []
         self.color1 = self._colors['BLACK']
         self.color2 = self._colors['BLACK']
+        self.color3 = self._colors['BLACK']
         self._blink_light_on = False
 
     def stop(self):
@@ -38,16 +44,34 @@ class LedColorController(object):
         :returns: None
 
         """
-        if self._led_pyre_comm.bringup_running:
-            self.color1 = self._colors['ROBOT_NOT_PERFORMING_TASK'] # need a component for real value
-            self.color2 = self._colors['COMPONENTS_WORKING'] if \
-                    self._led_pyre_comm.everything_working else \
-                    self._colors['COMPONENTS_NOT_WORKING']
-        else:
+        self.color1 = self._colors['ROBOT_PERFORMING_TASK'] if \
+                self._led_pyre_comm.data['robot_performing_task'] else \
+                self._colors['ROBOT_NOT_PERFORMING_TASK']
+
+        if self._led_pyre_comm.data['e_stop_pressed']:
             self._blink_light_on = not self._blink_light_on
-            self.color1 = self._colors['ROBOT_NOT_PERFORMING_TASK']
-            self.color2 = self._colors["BRINGUP_NOT_RUNNING"] if \
+            self.color3 = self._colors["E_STOP_PRESSED"] if \
                     self._blink_light_on else self._colors['BLACK']
+        else:
+            if self._led_pyre_comm.data['bringup_running']:
+                self.color3 = self._colors['COMPONENTS_WORKING'] if \
+                        self._led_pyre_comm.data['everything_working'] else \
+                        self._colors['COMPONENTS_NOT_WORKING']
+            else:
+                self._blink_light_on = not self._blink_light_on
+                self.color3 = self._colors["BRINGUP_NOT_RUNNING"] if \
+                        self._blink_light_on else self._colors['BLACK']
+
+        bat_perc =  self._led_pyre_comm.data['battery_percentage']
+        if bat_perc < 20 :
+            self.color2 = self._colors['LOW_BATTERY']
+        elif bat_perc < 50:
+            self.color2 = self._colors['MEDIUM_BATTERY']
+        else:
+            self.color2 = self._colors['HIGH_BATTERY']
+
+        self._led_pyre_comm.send_fms_query()
+        self._led_pyre_comm.send_query(self.variables)
 
 
 if __name__ == "__main__":
@@ -75,7 +99,11 @@ if __name__ == "__main__":
     try:
         while True:
             led_color_controller.update_colors()
-            LedLights.set_status(lights, color1=led_color_controller.color1, color2=led_color_controller.color2)
+            LedLights.set_status(
+                    lights, 
+                    color1=led_color_controller.color1, 
+                    color2=led_color_controller.color2,
+                    color3=led_color_controller.color3)
             time.sleep(1)
     except (KeyboardInterrupt, SystemExit):
         print("Interrupted execution. Exiting.")

@@ -110,7 +110,7 @@ class LedLights(object):
             time.sleep(0.3)
 
     @staticmethod
-    def set_status(lights, color1=(255, 0, 0), color2=(255, 255, 255)):
+    def set_status(lights, color1=(255, 0, 0), color2=(0, 255, 0), color3=(255, 255, 255)):
         """ Set color1 to led1 and color2 to remaining leds
 
         :lights: list of tuples (each tuple is (r,g,b))
@@ -120,9 +120,13 @@ class LedLights(object):
 
         """
         N = len(lights)
+        second_led = int(N/2)
         lights[0] = color1
-        for i in range(1, N) :
-            lights[i] = color2
+        lights[second_led] = color2
+        for i in range(1, second_led) :
+            lights[i] = color3
+        for i in range(second_led+1, N) :
+            lights[i] = color3
 
     @staticmethod
     def set_status_half_and_half(lights, color1=(255, 0, 0), color2=(255, 255, 255)):
@@ -151,7 +155,8 @@ if __name__ == "__main__":
     LedLights.circle_test3(led_circle.led_colors)
     LedLights.circle_test4(led_circle.led_colors)
     LedLights.circle_test4(led_circle.led_colors, colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 255, 255)])
-    LedLights.set_status(led_circle.led_colors, color1=(0, 255, 0))
+    LedLights.set_status(led_circle.led_colors)
     time.sleep(1)
-    LedLights.set_status_half_and_half(led_circle.led_colors, color1=(0, 255, 0))
+    LedLights.set_status_half_and_half(led_circle.led_colors)
+    time.sleep(1)
     led_circle.stop()
