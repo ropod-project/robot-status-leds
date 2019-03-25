@@ -145,7 +145,7 @@ class LedLights(object):
             lights[i] = color2
 
 if __name__ == "__main__":
-    from led_circle import LedCircle
+    from gui_led_circle import LedCircle
     led_circle = LedCircle()
     led_circle.start()
     LedLights.show_percentage(led_circle.led_colors, 55.0)

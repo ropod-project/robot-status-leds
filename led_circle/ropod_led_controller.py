@@ -2,6 +2,8 @@
 
 import time
 import argparse
+import os.path
+import yaml
 
 from led_pyre_communicator import LedPyreCommunicator
 from led_lights import LedLights
@@ -12,25 +14,22 @@ class LedColorController(object):
     """Gets status of the robot from different components and decides the color
     of the leds accordingly"""
 
-    _colors = {
-        "ROBOT_PERFORMING_TASK":(0, 255, 0),
-        "ROBOT_NOT_PERFORMING_TASK":(0, 255, 255),
-        "BRINGUP_NOT_RUNNING":(255, 255, 255),
-        "COMPONENTS_WORKING":(0, 255, 0),
-        "COMPONENTS_NOT_WORKING":(255, 0, 0),
-        "E_STOP_PRESSED":(255, 0, 0),
-        "LOW_BATTERY":(255, 0, 0),
-        "MEDIUM_BATTERY":(255, 255, 0),
-        "HIGH_BATTERY":(0, 255, 0),
-        "BLACK":(0, 0, 0)
-    }
-    def __init__(self):
+    def __init__(self, config_file):
         self._led_pyre_comm = LedPyreCommunicator(robot_id)
         self.variables = []
-        self.color1 = self._colors['BLACK']
-        self.color2 = self._colors['BLACK']
-        self.color3 = self._colors['BLACK']
+        self.color1 = (0, 0, 0)
+        self.color2 = (0, 0, 0)
+        self.color3 = (0, 0, 0)
+        self._colors = None
         self._blink_light_on = False
+
+        try:
+            print(config_file)
+            with open(config_file, 'r') as f:
+                config_data = yaml.load(f)
+            self._colors = config_data.get('colors', None)
+        except Exception as e:
+            print("Encountered following error while reading config file\n", str(e))
 
     def stop(self):
         """Cleanup function for pyre nodes
@@ -44,6 +43,8 @@ class LedColorController(object):
         :returns: None
 
         """
+        if self._colors is None :
+            return
         self.color1 = self._colors['ROBOT_PERFORMING_TASK'] if \
                 self._led_pyre_comm.data['robot_performing_task'] else \
                 self._colors['ROBOT_NOT_PERFORMING_TASK']
@@ -75,17 +76,24 @@ class LedColorController(object):
 
 
 if __name__ == "__main__":
+    code_dir = os.path.abspath(os.path.dirname(__file__))
+    main_dir = os.path.dirname(code_dir)
+    default_config_file = os.path.join(main_dir, 'config/config.yaml')
+
     parser = argparse.ArgumentParser(description="Control LED lights for a ropod")
     parser.add_argument('-rid', '--robot_id', help='ID of robot on which the leds are attached', 
             default='ropod_001')
     parser.add_argument('-s', '--simulation', action='store_true', 
             help='Use tkinter gui window to see led lights instead of using actual hardware.')
+    parser.add_argument('-c', '--config_file', default=default_config_file, 
+            help='Config file path')
     args = parser.parse_args()
     robot_id = args.robot_id
     simulation = args.simulation
+    config_file = args.config_file
 
     if simulation:
-        from led_circle import LedCircle
+        from gui_led_circle import LedCircle
         led_circle = LedCircle()
         led_circle.start()
         lights = led_circle.led_colors
@@ -94,7 +102,7 @@ if __name__ == "__main__":
         import neopixel
         lights = neopixel.NeoPixel(board.D18, 12)
 
-    led_color_controller = LedColorController()
+    led_color_controller = LedColorController(config_file)
     LedLights.circle_test3(lights)
     try:
         while True:
