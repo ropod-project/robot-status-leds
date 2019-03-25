@@ -121,4 +121,4 @@ if __name__ == "__main__":
     if simulation:
         led_circle.stop()
     else:
-        pass # clean up of led lights library (if any)
+        LedLights.set_color(lights, color1=(0, 0, 0))
