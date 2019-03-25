@@ -93,7 +93,7 @@ if __name__ == "__main__":
     config_file = args.config_file
 
     if simulation:
-        from gui_led_circle import LedCircle
+        from status_leds.gui_led_circle import LedCircle
         led_circle = LedCircle()
         led_circle.start()
         lights = led_circle.led_colors
