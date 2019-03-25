@@ -1,7 +1,8 @@
 #! /bin/sh
 
-# source bashrc to source env variables
-source ~/.bashrc
+# export neccessary environment variables
+export BLINKA_FORCEBOARD=RASPBERRY_PI_B_PLUS
+export BLINKA_FORCECHIP=BCM2XXX
 
 # run the actual code
-./neopixel_test.py
+python3 ropod_led_controller.py
