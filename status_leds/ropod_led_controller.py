@@ -64,7 +64,9 @@ class LedColorController(object):
                         self._blink_light_on else self._colors['BLACK']
 
         bat_perc =  self._led_pyre_comm.data['battery_percentage']
-        if bat_perc < 20 :
+        if bat_perc is None:
+            self.color2 = self._colors['BLACK']
+        elif bat_perc < 20 :
             self.color2 = self._colors['LOW_BATTERY']
         elif bat_perc < 50:
             self.color2 = self._colors['MEDIUM_BATTERY']
