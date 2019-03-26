@@ -11,7 +11,7 @@ class LedPyreCommunicator(RopodPyre):
     setting the led lights accodingly.
 
     '''
-    def __init__(self, robot_id='ropod_001', black_box_id='black_box_001'):
+    def __init__(self, robot_id='ropod_001', black_box_id='black_box_001', stale_timeout=10.0):
         super(LedPyreCommunicator, self).__init__(
                 'led_pyre_communicator', ['MONITOR', 'ROPOD'], list(), verbose=False)
         self.robot_id = robot_id
@@ -25,6 +25,8 @@ class LedPyreCommunicator(RopodPyre):
             'e_stop_pressed': False,
             'bb_variables': {}
         }
+        self.stale_timeout = stale_timeout
+        self.last_health_status_msg = time.time()
         self.start()
 
     def send_query(self, variables):
@@ -85,6 +87,8 @@ class LedPyreCommunicator(RopodPyre):
             if message_robot_id != self.robot_id:
                 return None
 
+            self.last_health_status_msg = time.time()
+
             status_msg = dict_msg['payload']['monitors']
             for component in status_msg:
                 if component['component'] == 'ROS':
@@ -132,6 +136,14 @@ class LedPyreCommunicator(RopodPyre):
         else:
             return None
 
+    def is_health_status_stale(self):
+        """check if the info in self.data which are received from component monitor
+        message is stale or not.
+        :returns: bool
+
+        """
+        return self.last_health_status_msg + self.stale_timeout < time.time()
+    
 
 if __name__ == "__main__":
     led_pyre_comm = LedPyreCommunicator()

@@ -15,7 +15,7 @@ class LedColorController(object):
     of the leds accordingly"""
 
     def __init__(self, config_file, use_brightness=True):
-        self._led_pyre_comm = LedPyreCommunicator(robot_id)
+        self._led_pyre_comm = LedPyreCommunicator(robot_id=robot_id)
         self.variables = []
         self.color1 = (0, 0, 0)
         self.color2 = (0, 0, 0)
@@ -55,7 +55,9 @@ class LedColorController(object):
                 self._led_pyre_comm.data['robot_performing_task'] else \
                 self._colors['ROBOT_NOT_PERFORMING_TASK']
 
-        if self._led_pyre_comm.data['e_stop_pressed']:
+        if self._led_pyre_comm.is_health_status_stale():
+            self.color3 = self._colors['BLACK']
+        elif self._led_pyre_comm.data['e_stop_pressed']:
             self._blink_light_on = not self._blink_light_on
             self.color3 = self._colors["E_STOP_PRESSED"] if \
                     self._blink_light_on else self._colors['BLACK']
