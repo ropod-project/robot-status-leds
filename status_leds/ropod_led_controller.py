@@ -14,7 +14,7 @@ class LedColorController(object):
     """Gets status of the robot from different components and decides the color
     of the leds accordingly"""
 
-    def __init__(self, config_file):
+    def __init__(self, config_file, use_brightness=True):
         self._led_pyre_comm = LedPyreCommunicator(robot_id)
         self.variables = []
         self.color1 = (0, 0, 0)
@@ -27,7 +27,13 @@ class LedColorController(object):
             print(config_file)
             with open(config_file, 'r') as f:
                 config_data = yaml.load(f)
+            brightness = config_data.get('brightness', 20)
             self._colors = config_data.get('colors', None)
+            if use_brightness:
+                for i in self._colors:
+                    for j in range(3):
+                        if self._colors[i][j] == 255:
+                            self._colors[i][j] = brightness
         except Exception as e:
             print("Encountered following error while reading config file\n", str(e))
 
@@ -104,7 +110,7 @@ if __name__ == "__main__":
         import neopixel
         lights = neopixel.NeoPixel(board.D18, 12)
 
-    led_color_controller = LedColorController(config_file)
+    led_color_controller = LedColorController(config_file, use_brightness=not simulation)
     LedLights.circle_test3(lights)
     try:
         while True:
