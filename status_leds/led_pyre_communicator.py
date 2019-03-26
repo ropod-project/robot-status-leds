@@ -21,7 +21,7 @@ class LedPyreCommunicator(RopodPyre):
             'everything_working': False,
             'bringup_running': False,
             'robot_performing_task': False,
-            'battery_percentage': 0.0,
+            'battery_percentage': None,
             'e_stop_pressed': False,
             'bb_variables': {}
         }
