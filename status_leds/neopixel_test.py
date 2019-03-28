@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import test
+import time
 import board
 import neopixel
 
