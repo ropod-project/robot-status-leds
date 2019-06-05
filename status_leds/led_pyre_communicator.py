@@ -97,7 +97,7 @@ class LedPyreCommunicator(RopodPyre):
                             self.data['bringup_running'] = \
                                     monitor['healthStatus'].get('bringup', False)
                             break
-                if component['component'] == 'battery_monitor':
+                if component['component'] == 'Battery':
                     if component['modes'][0]['healthStatus'].get('status', False):
                         self.data['battery_percentage'] = \
                                 component['modes'][0]['healthStatus'].get('battery_percentage', 0.0)
