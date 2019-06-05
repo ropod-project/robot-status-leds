@@ -98,7 +98,7 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--config_file', default=default_config_file, 
             help='Config file path')
     args = parser.parse_args()
-    robot_id = 'robot_' + args.robot_id
+    robot_id = 'ropod_' + args.robot_id
     black_box_id = 'black_box_' + args.robot_id
     simulation = args.simulation
     config_file = args.config_file
