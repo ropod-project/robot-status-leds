@@ -12,8 +12,10 @@ class LedPyreCommunicator(RopodPyre):
 
     '''
     def __init__(self, robot_id='ropod_001', black_box_id='black_box_001', stale_timeout=10.0):
-        super(LedPyreCommunicator, self).__init__(
-                'led_pyre_communicator', ['MONITOR', 'ROPOD'], list(), verbose=False)
+        super(LedPyreCommunicator, self).__init__({
+                'node_name': 'led_pyre_communicator',
+                'groups': ['MONITOR', 'ROPOD'],
+                'message_types': list()}, verbose=False)
         self.robot_id = robot_id
         self.black_box_id = black_box_id
         self.sender_ids = []
