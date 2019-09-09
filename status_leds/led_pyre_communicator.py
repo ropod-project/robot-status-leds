@@ -105,7 +105,7 @@ class LedPyreCommunicator(RopodPyre):
                                 component['modes'][0]['healthStatus'].get('battery_percentage', 0.0)
                     else:
                         self.data['battery_percentage'] = None
-                if component['component'] == 'e_stop_monitor':
+                if component['component'] == 'Emergency stop':
                     if component['modes'][0]['healthStatus'].get('status', False):
                         self.data['e_stop_pressed'] = \
                                 component['modes'][0]['healthStatus'].get('e_stop_pressed', False)
