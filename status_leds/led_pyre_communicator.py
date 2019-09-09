@@ -12,8 +12,10 @@ class LedPyreCommunicator(RopodPyre):
 
     '''
     def __init__(self, robot_id='ropod_001', black_box_id='black_box_001', stale_timeout=10.0):
-        super(LedPyreCommunicator, self).__init__(
-                'led_pyre_communicator', ['MONITOR', 'ROPOD'], list(), verbose=False)
+        super(LedPyreCommunicator, self).__init__({
+                'node_name': 'led_pyre_communicator',
+                'groups': ['MONITOR', 'ROPOD'],
+                'message_types': list()}, verbose=False)
         self.robot_id = robot_id
         self.black_box_id = black_box_id
         self.sender_ids = []
@@ -97,13 +99,13 @@ class LedPyreCommunicator(RopodPyre):
                             self.data['bringup_running'] = \
                                     monitor['healthStatus'].get('bringup', False)
                             break
-                if component['component'] == 'battery_monitor':
+                if component['component'] == 'Battery':
                     if component['modes'][0]['healthStatus'].get('status', False):
                         self.data['battery_percentage'] = \
                                 component['modes'][0]['healthStatus'].get('battery_percentage', 0.0)
                     else:
                         self.data['battery_percentage'] = None
-                if component['component'] == 'e_stop_monitor':
+                if component['component'] == 'Emergency stop':
                     if component['modes'][0]['healthStatus'].get('status', False):
                         self.data['e_stop_pressed'] = \
                                 component['modes'][0]['healthStatus'].get('e_stop_pressed', False)

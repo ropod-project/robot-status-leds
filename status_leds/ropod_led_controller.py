@@ -14,8 +14,8 @@ class LedColorController(object):
     """Gets status of the robot from different components and decides the color
     of the leds accordingly"""
 
-    def __init__(self, config_file, use_brightness=True):
-        self._led_pyre_comm = LedPyreCommunicator(robot_id=robot_id)
+    def __init__(self, config_file, use_brightness=True, robot_id='ropod_001', black_box_id='black_box_001'):
+        self._led_pyre_comm = LedPyreCommunicator(robot_id=robot_id, black_box_id=black_box_id)
         self.variables = []
         self.color1 = (0, 0, 0)
         self.color2 = (0, 0, 0)
@@ -92,13 +92,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Control LED lights for a ropod")
     parser.add_argument('-rid', '--robot_id', help='ID of robot on which the leds are attached', 
-            default='ropod_001')
+            default='001')
     parser.add_argument('-s', '--simulation', action='store_true', 
             help='Use tkinter gui window to see led lights instead of using actual hardware.')
     parser.add_argument('-c', '--config_file', default=default_config_file, 
             help='Config file path')
     args = parser.parse_args()
-    robot_id = args.robot_id
+    robot_id = 'ropod_' + args.robot_id
+    black_box_id = 'black_box_' + args.robot_id
     simulation = args.simulation
     config_file = args.config_file
 
@@ -112,7 +113,11 @@ if __name__ == "__main__":
         import neopixel
         lights = neopixel.NeoPixel(board.D18, 12)
 
-    led_color_controller = LedColorController(config_file, use_brightness=not simulation)
+    led_color_controller = LedColorController(
+        config_file, 
+        use_brightness=not simulation, 
+        robot_id=robot_id, 
+        black_box_id=black_box_id)
     LedLights.circle_test3(lights)
     try:
         while True:
